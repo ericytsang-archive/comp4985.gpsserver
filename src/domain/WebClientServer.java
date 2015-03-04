@@ -1,4 +1,4 @@
-package main;
+package domain;
 
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -9,7 +9,7 @@ import org.java_websocket.server.WebSocketServer;
 
 /**
  * this server is used to serve web clients.
- * 
+ *
  * users using web browsers to connect to the Apache web server to get a map
  *   that has markers that display where people currently are will also connect
  *   to this web server using a web socket. this server will send GPS updates to
@@ -18,19 +18,20 @@ import org.java_websocket.server.WebSocketServer;
  * @author Eric Tsang
  *
  */
-public class WebClientServer extends WebSocketServer
+public class WebClientServer extends WebSocketServer implements GpsRecordManager.GpsUpdateListener
 {
     //////////////////////
     // public interface //
     //////////////////////
 
-    public WebClientServer(int port, GpsRecords gpsRecords) throws UnknownHostException
+    public WebClientServer(int port, GpsRecordManager gpsRecords) throws UnknownHostException
     {
         super(new InetSocketAddress(port));
+        gpsRecords.registerListener(this);
     }
 
     @Override
-    public void onClose(WebSocket conn, int arg1, String reason, boolean code)
+    public void onClose(WebSocket conn, int code, String reason, boolean remote)
     {
     }
 
@@ -46,6 +47,11 @@ public class WebClientServer extends WebSocketServer
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake)
+    {
+    }
+
+    @Override
+    public void onGpsUpdate(GpsRecord gpsRecord)
     {
     }
 }
